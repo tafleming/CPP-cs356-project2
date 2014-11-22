@@ -9,10 +9,11 @@ public class Driver {
 		JFrame frame = new JFrame("Mini Twitter");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().add(AdminControlPanel.getInstance());
+		frame.setResizable(false);
 		frame.pack();
 		frame.setVisible(true);
 		
-		frame.setResizable(false);
+		
 		
 	}
 

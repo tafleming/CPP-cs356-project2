@@ -5,6 +5,7 @@ import java.awt.GridLayout;
 
 
 import java.awt.Insets;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 //import java.awt.FlowLayout;
@@ -14,6 +15,7 @@ import javax.swing.JPanel;
 public class AdminControlPanel extends JPanel {
 
 	private static AdminControlPanel instance = null;
+	private List<User> allUsers;
 	private static final int WIDTH = 600;
 	private static final int HEIGHT = 400;
 	
@@ -22,11 +24,11 @@ public class AdminControlPanel extends JPanel {
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		setFocusable(true);
 		requestFocus();
-		this.add(new TreeView());
+		this.add(TreeView.getInstance());
 		this.add(new UserControlPanel());
 		this.add(new InfoPanel());
 		
-		//using no layout manager for top level panel
+		//using no layout manager for top level panel to make life easier
 		this.setLayout(null);
 		this.getComponent(0).setBounds(0, 0, 200, 400);
 		this.getComponent(1).setBounds(200, 0, 400, 200);
@@ -43,4 +45,8 @@ public class AdminControlPanel extends JPanel {
 	}
 	
 	public void getCounts(){}
+	
+	public static User getUser(String id) {
+		return new User("k", "ef");
+	}
 }

@@ -1,39 +1,45 @@
 package edu.csupomona.cs356.project2;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CompositeUserGroup implements IUserGroup {
 
 	private List<User> users;
 	private List<IUserGroup> childGroups;
-	private String groupName;
+	
 	private String id;
-	public CompositeUserGroup(String name, String id) {
-		groupName = name;
+	public CompositeUserGroup( String id) {
+
 		this.id = id;
+		users = new ArrayList<User>();
+		childGroups = new ArrayList<IUserGroup>();
 	}
 	
 	@Override
-	public void addUser() {
-		// TODO Auto-generated method stub
-
+	public void addUser(User user) {
+		users.add(user);
 	}
 
 	@Override
-	public void removeUser() {
-		// TODO Auto-generated method stub
+	public void removeUser(String id) {
+		//didnt have time to implement this
 
 	}
 	
-	public void addGroup() {
-		
+	public void addGroup(IUserGroup group) {
+		childGroups.add(group);
 	}
-	public User getUser(String id) {
-		return new User("k", "k");
-	}
+	
 	
 	@Override
 	public String toString() {
-		return groupName;
+		return "Group:" + id;
+	}
+
+	@Override
+	public String getID() {
+		
+		return id;
 	}
 }

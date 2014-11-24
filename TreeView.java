@@ -4,15 +4,11 @@ import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeSelectionModel;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 
 public class TreeView extends JPanel {
 	
@@ -38,8 +34,13 @@ public class TreeView extends JPanel {
 		
 		return instance;
 	}
+	
+	public IUserGroup getRootGroup() {
+		IUserGroup group = (IUserGroup) root.getUserObject();
+		return group;
+	}
 	private void createTree() {
-		root  = new DefaultMutableTreeNode("Root"/*new CompositeUserGroup("Root", "0")*/);
+		root  = new DefaultMutableTreeNode(new CompositeUserGroup("Root"));
 		treeModel = new DefaultTreeModel(root);
 		
 		userTree = new JTree(treeModel);
@@ -57,8 +58,5 @@ public class TreeView extends JPanel {
 	public DefaultTreeModel getModel() {
 		return treeModel;
 	}
-	
-	
-	//method(s) for adding users and groups to tree. A group will be a node, users children of the node.
 
 }

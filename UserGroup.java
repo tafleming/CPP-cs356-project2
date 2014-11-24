@@ -1,31 +1,42 @@
 package edu.csupomona.cs356.project2;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserGroup implements IUserGroup {
 
 	private List<User> users;
-	
 	private String groupID;
 	private String groupName;
+	
 	public UserGroup(String name, String id) {
-		groupName = name;
+		
 		groupID = id;
+		users = new ArrayList<User>();
 	}
-	/* (non-Javadoc)
-	 * @see edu.csupomona.cs356.project2.IUserGroup#addUser()
-	 */
+	
 	@Override
-	public void addUser(){}
-	/* (non-Javadoc)
-	 * @see edu.csupomona.cs356.project2.IUserGroup#removeUser()
-	 */
+	public void addUser(User user) {
+		
+	}
+	
 	@Override
-	public void removeUser(){}
+	public void removeUser(String id){}
 	
 	@Override
 	public String toString() {
-		return groupName;
+		return "Group:" + groupID;
+	}
+
+	@Override
+	public String getID() {
+	
+		return groupID;
+	}
+
+	@Override
+	public void addGroup(IUserGroup group) {
+		
 	}
 	
 }

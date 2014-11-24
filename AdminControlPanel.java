@@ -1,21 +1,21 @@
 package edu.csupomona.cs356.project2;
 
 import java.awt.Dimension;
-import java.awt.GridLayout;
-
-
-import java.awt.Insets;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.BoxLayout;
+import javax.swing.JOptionPane;
 //import java.awt.FlowLayout;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 
 @SuppressWarnings("serial")
 public class AdminControlPanel extends JPanel {
 
 	private static AdminControlPanel instance = null;
+	//keep track of all the users and groups for the analysis features
 	private List<User> allUsers;
+	private List<IUserGroup> allGroups;
 	private static final int WIDTH = 600;
 	private static final int HEIGHT = 400;
 	
@@ -25,7 +25,7 @@ public class AdminControlPanel extends JPanel {
 		setFocusable(true);
 		requestFocus();
 		this.add(TreeView.getInstance());
-		this.add(new UserControlPanel());
+		this.add(UserControlPanel.getInstance());
 		this.add(new InfoPanel());
 		
 		//using no layout manager for top level panel to make life easier
@@ -33,6 +33,10 @@ public class AdminControlPanel extends JPanel {
 		this.getComponent(0).setBounds(0, 0, 200, 400);
 		this.getComponent(1).setBounds(200, 0, 400, 200);
 		this.getComponent(2).setBounds(200, 300, 400, 100);
+		
+		allUsers = new ArrayList<User>();
+		allGroups = new ArrayList<IUserGroup>();
+		addRoot();
 		
 	}
 	
@@ -46,7 +50,51 @@ public class AdminControlPanel extends JPanel {
 	
 	public void getCounts(){}
 	
-	public static User getUser(String id) {
-		return new User("k", "ef");
+	public User getUser(String id) {
+		for(int i = 0; i < allUsers.size(); i++) {
+			if (allUsers.get(i).getID().equals(id)) {
+				return allUsers.get(i);
+			}
+				
+		}
+		
+		JOptionPane.showMessageDialog(null, "There is no user with that ID!");
+	
+		return null;
 	}
+
+	public boolean addUser(User newUser, JTextArea status) {
+		for (int i =0; i < allUsers.size(); i++) {
+			if (allUsers.get(i).getID().equals(newUser.getID())) {
+				status.setText("A user with that ID already exists.");
+				return false;
+			}
+		}
+		allUsers.add(newUser);
+		return true;
+	}
+	
+	public boolean addGroup(IUserGroup group, JTextArea status) {
+		for (int i = 0; i < allGroups.size(); i++) {
+			if (allGroups.get(i).getID().equals(group.getID())) {
+				status.setText("A group with that ID already exists.");
+				return false;
+			}
+		}
+		allGroups.add(group);
+		return true;
+		
+	}
+	
+	private void addRoot() {
+		allGroups.add(TreeView.getInstance().getRootGroup());
+	}
+	public List<User> getUsers() {
+		return allUsers;
+	}
+
+	public List<IUserGroup> getGroups() {
+		return allGroups;
+	}
+	
 }

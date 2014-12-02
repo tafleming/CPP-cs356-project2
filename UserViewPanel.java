@@ -6,61 +6,77 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
+
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JOptionPane;
 
-public class UserViewPanel extends JPanel {
+public class UserViewPanel extends Observable implements Observer {
 
 	private static final int width = 300;
-	private static final int height = 300;
+	private static final int height = 350;
+	private JPanel panel;
 	private JTextArea userIDArea;
 	private JTextArea newMessage;
 	private JButton postMessage;
 	private JButton followUser;
-	private JList<String> currentFollowings; // add to scrollpane
-	private JList<String> newsFeed;
+	private JLabel dateLabel;
+	private JLabel updateLabel;
+	//private JList<String> currentFollowings; // add to scrollpane
+	//private JList<String> newsFeed;
 	private JScrollPane newsFeedPane;
 	private JScrollPane followingsPane;
 	private JScrollPane newMessagePane;
 	private User currentUser;
-	private DefaultListModel<String> listModelFollowings;
-	private DefaultListModel<String> listModelNewsFeed;
-
+	//private DefaultListModel<String> listModelFollowings;
+	//private DefaultListModel<String> listModelNewsFeed;
+	
+	//simple text areas to replace the clunky lists.
+	private JTextArea followingsArea;
+	private JTextArea newsFeedArea;
+	
 	public UserViewPanel() {
-		super();
-		this.setPreferredSize(new Dimension(width, height));
+		//super();
+		panel = new JPanel();
+		panel.setPreferredSize(new Dimension(width, height));
 		setUser(UserControlPanel.getCurrentUser());
-		initializeLists();
+		currentUser.addObserver(this);
+		initializeTextAreas();
 		initializeComponents();
+		addOtherUserViews();
 		addComponents();
 		addActionListeners();
 	}
-
+	
 	private void addComponents() {
-		add(userIDArea);
-		add(followUser);
-		followingsPane = new JScrollPane(currentFollowings);
+		panel.add(userIDArea);
+		panel.add(followUser);
+		panel.add(dateLabel);
+		panel.add(updateLabel);
+		followingsPane = new JScrollPane(followingsArea);
 		followingsPane.setPreferredSize(new Dimension(280, 100));
-		add(followingsPane);
-		add(newMessage);
+		panel.add(followingsPane);
+		panel.add(newMessage);
 		newMessagePane = new JScrollPane(newMessage);
 		newMessagePane.setFocusable(true);
 		newMessagePane.setPreferredSize(new Dimension(150, 50));
-		add(newMessagePane);
-		add(postMessage);
-		newsFeedPane = new JScrollPane(newsFeed);
+		panel.add(newMessagePane);
+		panel.add(postMessage);
+		newsFeedPane = new JScrollPane(newsFeedArea);
 		newsFeedPane.setPreferredSize(new Dimension(280, 100));
-		add(newsFeedPane);
+		panel.add(newsFeedPane);
 
 	}
 
@@ -71,33 +87,37 @@ public class UserViewPanel extends JPanel {
 		newMessage = new JTextArea("Type message here");
 		newMessage.setLineWrap(true);
 		newMessage.setWrapStyleWord(true);
-
+		dateLabel = new JLabel("Date created: " + currentUser.getDate());
+		updateLabel = new JLabel("Last update: " + currentUser.getUpdate());
 		postMessage = new JButton("Post Tweet");
 		followUser = new JButton("Follow user");
 	}
-
-	protected void initializeLists() {
-		listModelFollowings = new DefaultListModel<String>();
-		listModelNewsFeed = new DefaultListModel<String>();
-		currentFollowings = new JList<String>(listModelFollowings);
-		//currentFollowings.setSelectedIndex(0);
-		listModelFollowings.addElement("Current Followings: ");
+	
+	//adds any open user views to this panel for observer
+	private void addOtherUserViews() {
+		ArrayList<User> followings = (ArrayList<User>) currentUser
+				.getFollowings();
+		for (User user : followings) {
+			user.addObserver(this);
+		}
+	}
+	private void initializeTextAreas() {
+		followingsArea = new JTextArea();
+		followingsArea.append("Current Followings: \n");
+		newsFeedArea = new JTextArea();
+		newsFeedArea.append("News Feed: \n");
 		ArrayList<User> followings = (ArrayList<User>) currentUser
 				.getFollowings();
 		for (int i = 0; i < followings.size(); i++) {
-			listModelFollowings.addElement(followings.get(i).getID());
-		}
-
-		newsFeed = new JList<String>(listModelNewsFeed);
-		listModelNewsFeed.addElement("News Feed: ");
-		ArrayList<String> userNewsFeed = (ArrayList<String>) currentUser.getNewsFeed();
-		for (String str : userNewsFeed) {
-			listModelNewsFeed.addElement(str);
+			followingsArea.append("-" + followings.get(i).getID() + "\n");
 		}
 		
-
+		ArrayList<String> userNewsFeed = (ArrayList<String>) currentUser.getNewsFeed();
+		for (String str : userNewsFeed) {
+			newsFeedArea.append(str + "\n");
+		}
+		
 	}
-
 	private void addActionListeners() {
 		newMessage.addFocusListener(new FocusListener() {
 
@@ -131,12 +151,24 @@ public class UserViewPanel extends JPanel {
 				}
 				
 				currentUser.postMessage(msg);
-				ArrayList<String> currentFeed = (ArrayList<String>) currentUser.getNewsFeed();
-				listModelNewsFeed.addElement(currentFeed.get(currentFeed.size() - 1));
 			}
 
 		});
+		
+		userIDArea.addFocusListener(new FocusListener() {
 
+			@Override
+			public void focusGained(FocusEvent arg0) {
+				// clears the text when you click on the field
+				userIDArea.setText("");
+			}
+
+			@Override
+			public void focusLost(FocusEvent arg0) {
+			}
+		});
+		
+		final UserViewPanel thisPanel = this;
 		followUser.addActionListener(new ActionListener() {
 
 			@Override
@@ -148,12 +180,9 @@ public class UserViewPanel extends JPanel {
 						JOptionPane.showMessageDialog(null,
 								"Now following the user: " + userIDtoFollow
 										+ "!");
-						//it seems the following lines of code should update the view. but they don't :(
-						//the view is updated if a new window for the user is opened
-						listModelFollowings.insertElementAt(userIDtoFollow, 1);
-						currentFollowings.setSelectedIndex(1);
-						currentFollowings.ensureIndexIsVisible(1);
-
+						followingsArea.append("-" + userIDtoFollow + "\n");
+						User newFollowing = AdminControlPanel.getInstance().getUser(userIDtoFollow);
+						newFollowing.addObserver(thisPanel);
 					}
 				}
 			}
@@ -164,5 +193,16 @@ public class UserViewPanel extends JPanel {
 	public void setUser(User user) {
 		currentUser = user;
 
+	}
+	
+	public JPanel getPanel() {
+		return panel;
+	}
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		updateLabel.setText("Last Update: " + ((User)arg0).getUpdate());
+		newsFeedArea.append(((User) arg0).getID() + ": " + ((String) arg1) + "\n");
+		
 	}
 }

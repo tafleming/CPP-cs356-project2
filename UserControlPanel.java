@@ -5,6 +5,11 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -17,15 +22,18 @@ import javax.swing.tree.TreePath;
 
 public class UserControlPanel extends JPanel {
 
-	private static final int width = 400;
+	private static final int width = 410;
 	private static final int height = 200;
 	private JButton user;
 	private JButton group;
 	private JButton userView;
+	private JButton validateIDs;
+	private JButton displayUpdate;
 	private JTextField userID;
 	private JTextField groupID;
 	private static JTextArea statusMessage;
 	private TreeView treeView;
+	
 	private static User currentUser;
 	private static UserControlPanel instance;
 	
@@ -37,9 +45,11 @@ public class UserControlPanel extends JPanel {
 		treeView = TreeView.getInstance();
 		userView = new JButton("Open User View");
 		this.add(userView);
+		this.add(validateIDs);
+		this.add(displayUpdate);
 		this.add(statusMessage);
 		addActionListenersToButtons();
-		this.setLayout(new GridLayout(3, 2, 25, 25));
+		this.setLayout(new GridLayout(4, 2, 25, 25));
 		// this.setBorder(BorderFactory.createLineBorder(Color.black));
 	}
 	
@@ -53,6 +63,8 @@ public class UserControlPanel extends JPanel {
 	private void addButtons() {
 		user = new JButton("Add User");
 		group = new JButton("Add Group");
+		validateIDs = new JButton("Validate IDs");
+		displayUpdate = new JButton("Last Update");
 		this.add(user);
 		this.add(group);
 	}
@@ -92,11 +104,11 @@ public class UserControlPanel extends JPanel {
 				currentUser = (User) obj;
 				UserViewPanel viewPanel = new UserViewPanel();
 				//viewPanel.setUser((User) obj);
-				viewPanel.initializeLists();
+				//viewPanel.initializeLists();
 				
 				JFrame frame = new JFrame(obj.toString());
 				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				frame.getContentPane().add(viewPanel);
+				frame.getContentPane().add(viewPanel.getPanel());
 				frame.setResizable(false);
 				frame.pack();
 				frame.setVisible(true);		
@@ -143,8 +155,82 @@ public class UserControlPanel extends JPanel {
 				}
 			}
 		});
+		
+		userID.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusGained(FocusEvent arg0) {
+				// clears the text when you click on the field
+				userID.setText("");
+			}
+
+			@Override
+			public void focusLost(FocusEvent arg0) {
+			}
+		});
+		
+		groupID.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusGained(FocusEvent arg0) {
+				// clears the text when you click on the field
+				groupID.setText("");
+			}
+
+			@Override
+			public void focusLost(FocusEvent arg0) {
+			}
+		});
+		
+		validateIDs.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if(checkIDs()) {
+					statusMessage.setText("There are invalid IDs among the users/groups.");
+				} else {
+					statusMessage.setText("There are no invalid IDs.");
+				}
+			}
+			
+		});
+		
+		displayUpdate.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+			User lastUpdater = AdminControlPanel.getInstance().getUpdate();
+			if (lastUpdater != null) {
+				statusMessage.setText("Last Update: " + lastUpdater.getID());
+			} else {
+				statusMessage.setText("There have been no updates.");
+			}
+				
+			}
+			
+		});
 	}
 	
+	private boolean checkIDs() {
+		ArrayList<User> users = (ArrayList<User>)AdminControlPanel.getInstance().getUsers();
+		ArrayList<IUserGroup> groups = (ArrayList<IUserGroup>)AdminControlPanel.getInstance().getGroups();
+		for (User user : users) {
+			if (user.getID().contains(" ")) {
+				return true;
+				
+			}
+		}
+		
+		for (IUserGroup group : groups) {
+			if (group.getID().contains(" ")) {
+				return true;
+				
+			}
+		}
+		return false;
+	}
 	//parts of the following code were taken from the Java Swing Tutorials on JTrees.
 	public void addObject(Object child) {
 		

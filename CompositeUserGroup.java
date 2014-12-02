@@ -7,11 +7,12 @@ public class CompositeUserGroup implements IUserGroup {
 
 	private List<User> users;
 	private List<IUserGroup> childGroups;
-	
+	private final long date;
 	private String id;
 	public CompositeUserGroup( String id) {
 
 		this.id = id;
+		date = System.currentTimeMillis();
 		users = new ArrayList<User>();
 		childGroups = new ArrayList<IUserGroup>();
 	}

@@ -1,3 +1,27 @@
+++Version 1.1 December 2, 2014++
+New features added:
+-User and Group ID verification (previous version already did not allow duplicated IDs)
+
+-User and Group creation time added; User creation time can be viewed on the User view
+panel
+
+-Last update time added to Users, can be viewed on User View Panel
+
+-Last update button on main panel, shows the last user to make an update
+
+>>Bug Fixes<<
+-Posting messages will now update the current user view and all follower user views immediately
+
+-Adding a following will now update the current user view immediately
+
+-The file path to the positive words file is no longer hard coded into the program (the words are 
+now hard coded instead)
+
+-Clicking on any editable text field will now clear the field (previously was only on the post
+message field)
+
+
+++Version 1.0 November 23, 2014++
 !!Important!!
 -The positive_words.txt file is required to run the positive percentage analysis. 
 Currently, the path to the file is hardcoded into the program in the 

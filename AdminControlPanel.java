@@ -9,6 +9,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
+import com.sun.org.apache.xerces.internal.util.Status;
+
 @SuppressWarnings("serial")
 public class AdminControlPanel extends JPanel {
 
@@ -16,7 +18,8 @@ public class AdminControlPanel extends JPanel {
 	//keep track of all the users and groups for the analysis features
 	private List<User> allUsers;
 	private List<IUserGroup> allGroups;
-	private static final int WIDTH = 600;
+	private long lastUpdate;
+	private static final int WIDTH = 601;
 	private static final int HEIGHT = 400;
 	
 	private AdminControlPanel() {
@@ -95,6 +98,21 @@ public class AdminControlPanel extends JPanel {
 
 	public List<IUserGroup> getGroups() {
 		return allGroups;
+	}
+
+	public void setUpdate(long lastUpdate) {
+		this.lastUpdate = lastUpdate;
+		
+	}
+	
+	public User getUpdate() {
+		for (User user: allUsers) {
+			if (lastUpdate == user.getUpdateLong()) {
+				return user;
+				
+			}
+		}
+		return null;
 	}
 	
 }

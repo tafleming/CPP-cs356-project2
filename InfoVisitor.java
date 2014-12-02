@@ -38,7 +38,7 @@ public class InfoVisitor implements IVisitor {
 
 	@Override
 	public void visit(PositiveMessages positiveMessages) {
-		ArrayList<String> theWords = PositiveWordsFileReader.getInstance().getTheWords();
+		String[] theWords = PositiveWordsFileReader.getInstance().getTheWords();
 		ArrayList<User> users = (ArrayList<User>) AdminControlPanel.getInstance().getUsers();
 		ArrayList<String> theMessages = new ArrayList<String>();
 		JTextArea statusMessage = UserControlPanel.getStatusField();
@@ -54,10 +54,10 @@ public class InfoVisitor implements IVisitor {
 			}
 		//all the messages from all users should be in theMessages now
 		//now to match up with theWords
-		for (int i = 0; i < theWords.size(); i++) {
+		for (int i = 0; i < theWords.length; i++) {
 			for (int j = 0; j  < theMessages.size(); j++) {
 				String currentMessage = theMessages.get(j);
-				String currentWord = theWords.get(i);
+				String currentWord = theWords[i];
 				
 				if(currentMessage.contains(currentWord)) {
 					total++;
